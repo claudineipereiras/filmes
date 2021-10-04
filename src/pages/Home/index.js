@@ -1,5 +1,5 @@
-import React from 'react';
-import { ScrollView } from 'react-native';
+import React, {useState, useEffect }  from 'react';
+import { AppRegistry, ScrollView } from 'react-native';
 
 import { 
     Container, 
@@ -15,10 +15,31 @@ import {
 import { Feather } from '@expo/vector-icons';
 
 import Header from '../../components/Header';
-import SliderItem from '../../components/SliderItem';
+import SliderItem from '../../components/SliderItem'
 
+import api, { key } from '../../services/api';
 
 function Home(){
+    const [nowMovies, setNowMovies] = useState([])
+
+    useEffect(()=>{
+        let isActive = true;
+
+        async function getMovies(){
+            const response = await api.get('/movie/now_playing', {
+                params: {
+                    api_key: key, 
+                    language: 'pt-BR',
+                    page: 1,
+                }
+            })
+            console.log(response.data);
+
+        }
+
+        getMovies();
+
+    }, [])
     return(
         <Container>
             <Header title="React Prime"/>
@@ -33,7 +54,7 @@ function Home(){
                 </SearchButton>
             </SearchContainer>
 
-            <ScrollView>
+            <ScrollView showVerticalScrollIndicator={false}>
                 <Title>Em cartaz</Title>
 
                 <BannerButton activeOpacity={0.5} onPress={ ()=> alert('TESTE')}>
@@ -45,10 +66,28 @@ function Home(){
 
                 <SliderMovie
                 horizontal={true}
+                showsHorizontalScrollIndicator={false}
                 data={[1,2,3,4]}
-                renderItem={ ({ item }) => <SliderItem/>}
+                renderItem={ ({ item }) => <SliderItem /> }
                 />
-                    
+                
+                <Title>Populares</Title>
+                <SliderMovie
+                horizontal={true}
+                showsHorizontalScrollIndicator={false}
+                data={[1,2,3,4]}
+                renderItem={ ({ item }) => <SliderItem /> }
+                />
+                
+                <Title>Mais Votados</Title>
+                <SliderMovie
+                horizontal={true}
+                showsHorizontalScrollIndicator={false}
+                data={[1,2,3,4]}
+                renderItem={ ({ item }) => <SliderItem /> }
+                />
+                
+                
 
             </ScrollView>
 
