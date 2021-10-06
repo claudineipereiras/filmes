@@ -18,23 +18,51 @@ import Header from '../../components/Header';
 import SliderItem from '../../components/SliderItem'
 
 import api, { key } from '../../services/api';
+import { getListMovies } from '../../utils/movie';
 
 function Home(){
-    const [nowMovies, setNowMovies] = useState([])
+    const [nowMovies, setNowMovies] = useState([]);
+    const [populatMovies, setPopularMovies] = useState([]);
+    const [topMovies, setTopMovies] = useState([]);
 
     useEffect(()=>{
         let isActive = true;
 
         async function getMovies(){
-            const response = await api.get('/movie/now_playing', {
-                params: {
-                    api_key: key, 
-                    language: 'pt-BR',
-                    page: 1,
-                }
-            })
-            console.log(response.data);
+          const [nowData, popularData, topData] = await Promise.all([
+              api.get('/movie/now_playing',{
+                 params:{
+                     api_key: key,
+                     language: 'pt-BR',
+                     page: 1,
+                 } 
+              }),
+              
+              api.get('/movie/popular',{
+                 params:{
+                     api_key: key,
+                     language: 'pt-BR',
+                     page: 1,
+                 } 
+              }),
 
+              api.get('/movie/top_rated',{
+                 params:{
+                     api_key: key,
+                     language: 'pt-BR',
+                     page: 1,
+                 } 
+              }),
+          ])
+
+          const nowList = getListMovies(10, nowData.data.results);
+          const popularList = getListMovies (5, popularData.data.results);
+          const topList = getListMovies (5, topData.data.results);
+          
+          setNowMovies(nowList)
+          setPopularMovies(popularList)
+          setTopMovies(topList)
+            
         }
 
         getMovies();
@@ -67,24 +95,27 @@ function Home(){
                 <SliderMovie
                 horizontal={true}
                 showsHorizontalScrollIndicator={false}
-                data={[1,2,3,4]}
-                renderItem={ ({ item }) => <SliderItem /> }
+                data={nowMovies}
+                renderItem={ ({ item }) => <SliderItem data={item}/> }
+                keyExtractor={ (item) => String(item.id) }
                 />
                 
                 <Title>Populares</Title>
                 <SliderMovie
                 horizontal={true}
                 showsHorizontalScrollIndicator={false}
-                data={[1,2,3,4]}
-                renderItem={ ({ item }) => <SliderItem /> }
+                data={populatMovies}
+                renderItem={ ({ item }) => <SliderItem data={item}/> }
+                keyExtractor={ (item) => String(item.id) }
                 />
                 
-                <Title>Mais Votados</Title>
+                <Title>Mais avaliados</Title>
                 <SliderMovie
                 horizontal={true}
                 showsHorizontalScrollIndicator={false}
-                data={[1,2,3,4]}
-                renderItem={ ({ item }) => <SliderItem /> }
+                data={topMovies}
+                renderItem={ ({ item }) => <SliderItem data={item}/> }
+                keyExtractor={ (item) => String(item.id) }
                 />
                 
                 
