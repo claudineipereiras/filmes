@@ -8,3 +8,8 @@ export function getListMovies(size, movies){
 
     return popularMovies;
 }
+
+//GErar um numero aleatorio com no tamanho da lista de filmes que eu passar
+export function randomBanner(movies){
+    return Math.floor(Math.random() * movies.length)
+}
